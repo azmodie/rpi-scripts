@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import time
+import string
 from quick2wire.gpio import Pin
 
 # import pins for output
@@ -15,32 +16,39 @@ in_pin = Pin(7, Pin.In)
 # init count
 count = 0
 
-print ("This script will increase a counter every time the button is pressed")
+print ("This script will increase a counter")
+print ("Every time the button is pressed")
+print ("Display the counter and binary values")
 print ("Please press the button")
 
 # outputs binary reprisentation to 4 leds that matches count. 
 def display_count(i):
-    out_pin4.value = bin(i)[-1] if len(bin(i))>2 else 0
-    out_pin3.value = bin(i)[-2] if len(bin(i))>3 else 0
-    out_pin2.value = bin(i)[-3] if len(bin(i))>4 else 0
-    out_pin1.value = bin(i)[-4] if len(bin(i))>5 else 0
+	binvalue = bin(i)[2:].zfill(4)
+	print ("Program output", binvalue)
+	out_pin4.value = binvalue[-1]
+	out_pin3.value = binvalue[-2]
+	out_pin2.value = binvalue[-3]
+	out_pin1.value = binvalue[-4]
 
 try:
 	while True:
 		mybutton = in_pin.value # get input value of button
 		if mybutton == False:
 			count = count + 1
+			if count == 16: # reset counter at 16
+				print ("-= Counter Reset =-") 
+				count = 0
+			print ("Counter is  ", count)
 			display_count(count)
-			print ("counter is  ", count) 
-			print ("binary output ", out_pin1.value,  out_pin2.value, out_pin3.value, out_pin4.value)
+			print ("Pin Output ")
+			print ("Pin 1 2 3 4")  
+			print ("   ", out_pin1.value,  out_pin2.value, out_pin3.value, out_pin4.value)
 			time.sleep(.2)
-		if count == 16: # reset counter at 16
-			print ("counter reset") 
-			count = 0
 
 except KeyboardInterrupt: # trap ctrl+c to cleanly unexport pins
-        out_pin1.unexport()
-        out_pin2.unexport()
-        out_pin3.unexport()
-        out_pin4.unexport()
-        in_pin.unexport()
+		display_count(0)
+		out_pin1.unexport()
+		out_pin2.unexport()
+		out_pin3.unexport()
+		out_pin4.unexport()
+		in_pin.unexport()
