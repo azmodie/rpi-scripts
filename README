@@ -1,1 +1,4 @@
 My Raspberry Pi Scripts
+
+rpi-count.py - press buuton to increase count and display binary value on 4 leds
+
